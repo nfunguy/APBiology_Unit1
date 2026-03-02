@@ -1,0 +1,497 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AP Biology Unit 1: Chemistry of Life</title>
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- FontAwesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&display=swap" rel="stylesheet">
+    <style>
+        body { font-family: 'Inter', sans-serif; }
+        .flashcard-inner {
+            position: relative;
+            width: 100%;
+            height: 100%;
+            text-align: center;
+            transition: transform 0.6s;
+            transform-style: preserve-3d;
+            cursor: pointer;
+        }
+        .flashcard.flipped .flashcard-inner { transform: rotateY(180deg); }
+        .flashcard-front, .flashcard-back {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            -webkit-backface-visibility: hidden;
+            backface-visibility: hidden;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 2rem;
+            border-radius: 1rem;
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+        }
+        .flashcard-front { background-color: #ffffff; color: #1e293b; border: 2px solid #e2e8f0; }
+        .flashcard-back { background-color: #3b82f6; color: white; transform: rotateY(180deg); overflow-y: auto; }
+        .active-tab { background-color: #eff6ff; color: #2563eb; border-right: 4px solid #2563eb; }
+
+        .frq-container { display: none; }
+        .frq-container.active { display: block; }
+    </style>
+</head>
+<body class="bg-gray-50 flex h-screen overflow-hidden">
+
+    <!-- Sidebar -->
+    <nav class="w-72 bg-white shadow-xl flex flex-col h-full z-10 flex-shrink-0">
+        <div class="p-6 border-b">
+            <h1 class="text-2xl font-bold text-blue-700"><i class="fa-solid fa-flask text-blue-500 mr-2"></i>AP Bio Unit 1</h1>
+            <p class="text-sm text-gray-500 mt-1">Chemistry of Life</p>
+        </div>
+
+        <div class="overflow-y-auto flex-1 py-4">
+            <ul class="space-y-1" id="nav-menu">
+                <!-- Rendered by JS -->
+            </ul>
+        </div>
+
+        <div class="p-4 border-t">
+            <button onclick="resetProgress()" class="w-full py-2 px-4 border border-red-500 text-red-500 rounded hover:bg-red-50 transition">Reset Progress</button>
+        </div>
+    </nav>
+
+    <!-- Main Content Area -->
+    <main class="flex-1 overflow-y-auto p-8 relative" id="main-content">
+        <!-- Rendered by JS -->
+    </main>
+
+    <script>
+        // Data Payloads
+        const topics = [{"id": "1.1", "title": "1.1 Structure of Water and Hydrogen Bonding", "theory": "Water is essential for life, primarily due to its unique chemical properties. A water molecule consists of one oxygen atom covalently bonded to two hydrogen atoms. Because oxygen is highly electronegative, it pulls the shared electrons closer to itself, creating a polar molecule with a partial negative charge on the oxygen and partial positive charges on the hydrogens. This polarity allows water molecules to form hydrogen bonds with one another and with other polar or charged molecules. These hydrogen bonds are responsible for emergent properties such as cohesion (water molecules sticking together), adhesion (water sticking to other surfaces), high specific heat capacity (resisting temperature changes), and surface tension.", "textbook_links": [{"name": "OpenStax 2.2: Water", "url": "https://openstax.org/books/biology-ap-courses/pages/2-2-water"}], "slides": ["Polar Covalent Bonds: Unequal sharing of electrons within H2O.", "Hydrogen Bonds: Weak attractions between separate H2O molecules.", "Cohesion: H2O molecules bind to each other (e.g., surface tension).", "Adhesion: H2O molecules bind to other polar molecules (e.g., capillary action).", "High Specific Heat: H2O absorbs/releases large amounts of heat without changing temperature significantly.", "Density Anomaly: Ice is less dense than liquid water due to stable hydrogen bond crystalline structure."], "videos": [{"name": "Khan Academy: Structure of water", "url": "https://www.khanacademy.org/science/ap-biology/chemistry-of-life/structure-of-water-and-hydrogen-bonding/v/hydrogen-bonding-in-water"}, {"name": "Bozeman Science: Water", "url": "http://www.bozemanscience.com/water-a-polar-molecule"}, {"name": "Amoeba Sisters: Properties of Water", "url": "https://www.youtube.com/watch?v=3jwAGWky98c"}], "pdf_file": "1.1_Structure-of-Water-and-Hydrogen-Bonding.pdf"}, {"id": "1.2", "title": "1.2 Elements of Life", "theory": "Organisms must exchange matter with the environment to grow, reproduce, and maintain organization. The foundational elements of life are Carbon (C), Hydrogen (H), Nitrogen (N), Oxygen (O), Phosphorus (P), and Sulfur (S). Carbon is uniquely suited to form the backbone of biological macromolecules because it can form four stable covalent bonds, creating complex, diverse, and large carbon skeletons. Nitrogen is essential for building proteins and nucleic acids. Phosphorus is a key component of nucleic acids and certain lipids (phospholipids).", "textbook_links": [{"name": "OpenStax 2.1: Atoms, Isotopes, Ions, and Molecules", "url": "https://openstax.org/books/biology-ap-courses/pages/2-1-atoms-isotopes-ions-and-molecules-the-building-blocks"}, {"name": "OpenStax 2.3: Carbon", "url": "https://openstax.org/books/biology-ap-courses/pages/2-3-carbon"}], "slides": ["CHNOPS: The six most abundant elements in living things.", "Carbon: The structural backbone; forms 4 covalent bonds, allowing branched, ring, and linear structures.", "Nitrogen: Found in amino acids (proteins) and nucleotides (nucleic acids).", "Phosphorus: Found in nucleotides (DNA/RNA), ATP, and phospholipids.", "Sulfur: Found in certain amino acids (cysteine), enabling disulfide bridges in protein tertiary structure."], "videos": [{"name": "Khan Academy: Elements of Life", "url": "https://www.khanacademy.org/science/ap-biology/chemistry-of-life/elements-of-life/v/elemental-building-blocks-of-biological-molecules"}, {"name": "Bozeman Science: The Molecules of Life", "url": "http://www.bozemanscience.com/molecules-of-life"}, {"name": "Amoeba Sisters: Biomolecules", "url": "https://www.youtube.com/watch?v=YO244P1e9QM"}], "pdf_file": "1.2_Elements_of_Life.pdf"}, {"id": "1.3", "title": "1.3 Introduction to Macromolecules", "theory": "Biological macromolecules are large molecules built from smaller repeating units called monomers. Monomers are joined together through dehydration synthesis (or condensation) reactions, where a molecule of water is removed to form a covalent bond between two monomers. Conversely, polymers are broken down into monomers via hydrolysis reactions, where a water molecule is added to cleave the covalent bond. The four major classes of biological macromolecules are carbohydrates, lipids, proteins, and nucleic acids. Their structures fundamentally determine their specific biological functions.", "textbook_links": [{"name": "OpenStax 3.1: Synthesis of Biological Macromolecules", "url": "https://openstax.org/books/biology-ap-courses/pages/3-1-synthesis-of-biological-macromolecules"}], "slides": ["Monomers vs. Polymers: Monomers are building blocks; polymers are long chains of monomers.", "Dehydration Synthesis: Joins monomers by removing H2O to form a new covalent bond.", "Hydrolysis: Breaks down polymers into monomers by adding H2O.", "Structure Dictates Function: The arrangement of functional groups and monomers determines the molecule's role."], "videos": [{"name": "Khan Academy: Intro to Macromolecules", "url": "https://www.khanacademy.org/science/ap-biology/chemistry-of-life/introduction-to-biological-macromolecules/v/introduction-to-macromolecules"}, {"name": "Bozeman Science: Biological Molecules", "url": "http://www.bozemanscience.com/042-biological-molecules"}, {"name": "Amoeba Sisters: Biomolecules (Updated)", "url": "https://www.youtube.com/watch?v=YO244P1e9QM"}], "pdf_file": "1.3_Introduction-to-Macromolecules.pdf"}, {"id": "1.4", "title": "1.4 Carbohydrates", "theory": "Carbohydrates are composed of carbon, hydrogen, and oxygen, typically in a 1:2:1 ratio. Their primary monomer is the monosaccharide (e.g., glucose). Monosaccharides can be linked via dehydration synthesis to form disaccharides (e.g., sucrose) and complex polysaccharides. Polysaccharides serve various functions: starch and glycogen are used for energy storage in plants and animals respectively, while cellulose and chitin provide structural support in plant cell walls and arthropod exoskeletons. The difference in function often arises from variations in the stereochemistry of the glycosidic linkages (e.g., alpha vs. beta linkages).", "textbook_links": [{"name": "OpenStax 3.2: Carbohydrates", "url": "https://openstax.org/books/biology-ap-courses/pages/3-2-carbohydrates"}], "slides": ["Monomer: Monosaccharides (e.g., glucose, fructose).", "Bond: Glycosidic linkages (formed via dehydration synthesis).", "Energy Storage: Starch (plants) and Glycogen (animals).", "Structural Role: Cellulose (plant cell walls) and Chitin (fungi/exoskeletons).", "Alpha vs. Beta: Alpha glucose forms helical polymers (starch); beta glucose forms straight, rigid polymers (cellulose)."], "videos": [{"name": "Khan Academy: Carbohydrates", "url": "https://www.khanacademy.org/science/ap-biology/chemistry-of-life/properties-structure-and-function-of-biological-macromolecules/v/carbohydrates"}, {"name": "Bozeman Science: Carbohydrates", "url": "https://www.youtube.com/watch?v=_cqlGz-w1x8"}, {"name": "Amoeba Sisters: Carbohydrates Overview", "url": "https://www.youtube.com/watch?v=YO244P1e9QM"}], "pdf_file": "1.4_Carbohydrates-Structure-and-Function.pdf"}, {"id": "1.5", "title": "1.5 Lipids", "theory": "Lipids are a diverse group of nonpolar, hydrophobic macromolecules made primarily of carbon and hydrogen. They do not form true polymers. Major types include triglycerides (fats/oils), phospholipids, and steroids. Triglycerides consist of a glycerol molecule bound to three fatty acid chains and serve as long-term energy storage. Phospholipids have a hydrophilic phosphate head and two hydrophobic fatty acid tails, making them amphipathic and ideal for forming cellular membranes. Steroids (like cholesterol) have a characteristic four-ring structure and function as membrane stabilizers and signaling molecules. Saturated fatty acids lack double bonds and are solid at room temp, while unsaturated fatty acids have \"kinks\" from double bonds and are liquid.", "textbook_links": [{"name": "OpenStax 3.3: Lipids", "url": "https://openstax.org/books/biology-ap-courses/pages/3-3-lipids"}], "slides": ["Hydrophobic Nature: Nonpolar, predominantly C and H atoms.", "Triglycerides: Glycerol + 3 fatty acids (energy storage, insulation).", "Saturated vs. Unsaturated: Saturated = no double bonds (straight); Unsaturated = double bonds (kinked).", "Phospholipids: Amphipathic (hydrophilic head, hydrophobic tail); form lipid bilayers.", "Steroids: Four fused carbon rings (e.g., cholesterol, estrogen)."], "videos": [{"name": "Khan Academy: Lipids", "url": "https://www.khanacademy.org/science/ap-biology/chemistry-of-life/properties-structure-and-function-of-biological-macromolecules/v/lipids"}, {"name": "Bozeman Science: Lipids", "url": "https://www.youtube.com/watch?v=VGHD9e3yRIU"}, {"name": "Amoeba Sisters: Lipids Overview", "url": "https://www.youtube.com/watch?v=YO244P1e9QM"}], "pdf_file": "1.5_Lipids.pdf"}, {"id": "1.6", "title": "1.6 Nucleic Acids", "theory": "Nucleic acids, DNA and RNA, are polymers specialized for the storage, transmission, and use of genetic information. The monomer is the nucleotide, which consists of a 5-carbon sugar (deoxyribose in DNA, ribose in RNA), a phosphate group, and a nitrogenous base. Nucleotides are linked by phosphodiester bonds to form a linear strand with directionality (a 5' phosphate end and a 3' hydroxyl end). DNA forms an antiparallel double helix where adenine pairs with thymine (2 hydrogen bonds) and cytosine pairs with guanine (3 hydrogen bonds). RNA is typically single-stranded and contains uracil instead of thymine.", "textbook_links": [{"name": "OpenStax 3.5: Nucleic Acids", "url": "https://openstax.org/books/biology-ap-courses/pages/3-5-nucleic-acids"}], "slides": ["Monomer: Nucleotide (Sugar + Phosphate + Nitrogenous Base).", "Directionality: 5' to 3' ends; nucleotides are always added to the 3' end.", "DNA Structure: Antiparallel double helix; A=T, C\u2261G base pairing.", "RNA Structure: Usually single-stranded; uses ribose instead of deoxyribose; uses Uracil instead of Thymine.", "Function: Store and transmit genetic code."], "videos": [{"name": "Khan Academy: Nucleic Acids", "url": "https://www.khanacademy.org/science/ap-biology/chemistry-of-life/nucleic-acids/v/molecular-structure-of-dna"}, {"name": "Bozeman Science: Nucleic Acids", "url": "https://www.youtube.com/watch?v=NNASRkIU5Fw"}, {"name": "Amoeba Sisters: DNA, RNA, and Protein Synthesis", "url": "https://www.youtube.com/watch?v=JQByjprj_mA"}], "pdf_file": "1.6_Nucleic-Acids-DNA-and-RNA.pdf"}, {"id": "1.7", "title": "1.7 Proteins", "theory": "Proteins are incredibly diverse polymers made of amino acid monomers. There are 20 different amino acids, each with a central carbon attached to an amino group, a carboxyl group, a hydrogen atom, and a variable R-group (side chain). The chemical properties of the R-group (hydrophobic, hydrophilic, acidic, basic) determine how the protein folds. Amino acids are linked by peptide bonds. Protein structure has four levels: Primary (sequence of amino acids), Secondary (alpha-helices and beta-pleated sheets formed by hydrogen bonds in the backbone), Tertiary (3D folding driven by R-group interactions), and Quaternary (assembly of multiple polypeptide chains). A protein's specific 3D shape directly dictates its biological function.", "textbook_links": [{"name": "OpenStax 3.4: Proteins", "url": "https://openstax.org/books/biology-ap-courses/pages/3-4-proteins"}], "slides": ["Monomer: Amino acid (Amino group, Carboxyl group, R-group).", "Peptide Bonds: Covalent bonds joining amino acids.", "Primary Structure: Linear sequence of amino acids.", "Secondary Structure: Hydrogen bonding of the backbone (alpha helix, beta sheet).", "Tertiary Structure: 3D folding due to R-group interactions (H-bonds, ionic bonds, disulfide bridges, hydrophobic interactions).", "Quaternary Structure: Multiple polypeptide chains coming together."], "videos": [{"name": "Khan Academy: Proteins", "url": "https://www.khanacademy.org/science/ap-biology/chemistry-of-life/properties-structure-and-function-of-biological-macromolecules/v/overview-of-protein-structure"}, {"name": "Bozeman Science: Proteins", "url": "https://www.youtube.com/watch?v=2Jgb_DpaQhM"}, {"name": "Amoeba Sisters: Protein Structure and Function", "url": "https://www.youtube.com/watch?v=wvTv8TqWC48"}], "pdf_file": "1.7_Proteins-Structure-and-Function.pdf"}];
+        const questions = [{"q": "Which of the following best describes the bonds between the oxygen and hydrogen atoms within a single water molecule?", "options": ["Hydrogen bonds", "Polar covalent bonds", "Nonpolar covalent bonds", "Ionic bonds"], "ans": 1}, {"q": "Which property of water allows insects to walk on its surface?", "options": ["High specific heat", "Adhesion", "Surface tension", "Density of ice"], "ans": 2}, {"q": "The partial negative charge in a molecule of water occurs because...", "options": ["the oxygen atom donates an electron to each hydrogen atom.", "the electrons shared between the oxygen and hydrogen atoms spend more time around the oxygen atom nucleus.", "the oxygen atom has two pairs of electrons in its valence shell that are not shared.", "the oxygen atom forms hydrogen bonds with other water molecules."], "ans": 1}, {"q": "Water is transported from the roots to the leaves of plants against gravity. Which properties of water are directly responsible for this?", "options": ["High specific heat and heat of vaporization", "Cohesion and adhesion", "Hydrophobic interactions and nonpolar covalent bonds", "Density anomalies and high surface tension"], "ans": 1}, {"q": "Why does ice float in liquid water?", "options": ["The high surface tension of liquid water holds the ice up.", "The ionic bonds between the molecules in ice prevent it from sinking.", "Stable hydrogen bonds keep water molecules of ice farther apart than water molecules of liquid water.", "The crystalline lattice of ice causes it to be denser than liquid water."], "ans": 2}, {"q": "What type of bond forms between the partial positive charge of one water molecule and the partial negative charge of another?", "options": ["Covalent bond", "Ionic bond", "Hydrogen bond", "Van der Waals interaction"], "ans": 2}, {"q": "Which of the following is true regarding water's high specific heat?", "options": ["It causes coastal areas to have extreme temperature fluctuations.", "It allows water to evaporate quickly, cooling the organism.", "It requires a large amount of heat to break hydrogen bonds before the temperature can increase.", "It is mainly due to the nonpolar nature of the water molecule."], "ans": 2}, {"q": "Which statement best explains why water is considered a versatile solvent?", "options": ["It can dissolve both polar and ionic substances due to its own polarity.", "It is a small molecule that can easily fit between solute molecules.", "It has a neutral pH, preventing it from reacting with solutes.", "It readily forms nonpolar covalent bonds with solutes."], "ans": 0}, {"q": "If water lost its polarity, which of the following would be the most immediate consequence?", "options": ["It would no longer be able to form hydrogen bonds.", "It would become a stronger solvent for ionic compounds.", "Its specific heat would drastically increase.", "It would evaporate much slower at room temperature."], "ans": 0}, {"q": "Transpiration in plants relies heavily on...", "options": ["water's high heat of vaporization.", "the cohesion of water molecules to each other and adhesion to the xylem.", "the release of oxygen during photosynthesis.", "water's ability to dissolve nonpolar gases."], "ans": 1}, {"q": "Which of the following elements is found in all biological macromolecules?", "options": ["Nitrogen", "Phosphorus", "Carbon", "Sulfur"], "ans": 2}, {"q": "Which element is a crucial component of nucleic acids and phospholipids, but typically not found in carbohydrates?", "options": ["Nitrogen", "Phosphorus", "Carbon", "Sulfur"], "ans": 1}, {"q": "Carbon's versatility in forming complex molecules is primarily due to...", "options": ["its ability to form ionic bonds with oxygen.", "its four valence electrons, allowing it to form four stable covalent bonds.", "its high electronegativity.", "its ability to form hydrogen bonds."], "ans": 1}, {"q": "Which of the macromolecules always contain nitrogen?", "options": ["Carbohydrates and lipids", "Proteins and nucleic acids", "Carbohydrates and nucleic acids", "Lipids and proteins"], "ans": 1}, {"q": "Sulfur is found in which of the following macromolecules?", "options": ["Proteins, specifically in certain amino acids", "Nucleic acids, forming the backbone", "Carbohydrates, in complex polysaccharides", "Lipids, forming steroid rings"], "ans": 0}, {"q": "Which functional group is characteristic of alcohols and contributes to their water solubility?", "options": ["Amino", "Carbonyl", "Hydroxyl", "Sulfhydryl"], "ans": 2}, {"q": "Living organisms require phosphorus for the synthesis of...", "options": ["DNA, RNA, and ATP.", "Glucose and starch.", "Triglycerides and cholesterol.", "Cellulose and chitin."], "ans": 0}, {"q": "The element nitrogen is crucial for building which functional group?", "options": ["Hydroxyl", "Amino", "Phosphate", "Carboxyl"], "ans": 1}, {"q": "Molecules that have the same chemical formula but different structural arrangements are known as...", "options": ["Isotopes", "Isomers", "Ions", "Monomers"], "ans": 1}, {"q": "Which combination of elements primarily makes up carbohydrates and lipids?", "options": ["C, H, O, N", "C, H, O, P", "C, H, O", "C, H, O, N, S"], "ans": 2}, {"q": "What type of chemical reaction synthesizes polymers from monomers by removing a water molecule?", "options": ["Hydrolysis", "Dehydration synthesis", "Oxidation", "Reduction"], "ans": 1}, {"q": "The breakdown of a polymer into its constituent monomers occurs through...", "options": ["Dehydration synthesis", "Hydrolysis", "Polymerization", "Esterification"], "ans": 1}, {"q": "Which of the following pairs correctly matches a macromolecule with its monomer?", "options": ["Protein - nucleotide", "Carbohydrate - amino acid", "Nucleic acid - nucleotide", "Lipid - monosaccharide"], "ans": 2}, {"q": "During the formation of a peptide bond between two amino acids, what is released?", "options": ["A carbon dioxide molecule", "A water molecule", "An oxygen molecule", "An ATP molecule"], "ans": 1}, {"q": "If a polymer consists of 10 monomers, how many water molecules are required to completely hydrolyze it?", "options": ["9", "10", "11", "0"], "ans": 0}, {"q": "The diversity of biological polymers is fundamentally due to...", "options": ["the identical nature of all monomers.", "the arrangement and sequence of a limited number of common monomers.", "the presence of heavy metals in the polymers.", "hydrolysis reactions synthesizing unique structures."], "ans": 1}, {"q": "Which of the following is NOT a polymer?", "options": ["DNA", "Glucose", "Starch", "Cellulose"], "ans": 1}, {"q": "The reaction that joins a fatty acid to a glycerol molecule is a...", "options": ["dehydration synthesis reaction.", "hydrolysis reaction.", "hydrogen bond formation.", "ionic bond formation."], "ans": 0}, {"q": "Enzymes that break down macromolecules in the digestive tract typically operate via...", "options": ["Dehydration synthesis", "Hydrolysis", "Ligation", "Condensation"], "ans": 1}, {"q": "In a hydrolysis reaction, the addition of water...", "options": ["creates a new covalent bond.", "cleaves a covalent bond between monomers.", "forms an ionic bond.", "turns a monomer into a polymer."], "ans": 1}, {"q": "Which of the following carbohydrates serves as the primary energy storage molecule in animals?", "options": ["Starch", "Cellulose", "Glycogen", "Chitin"], "ans": 2}, {"q": "Cellulose is difficult for most animals to digest because...", "options": ["it is highly branched.", "it lacks carbon atoms.", "they lack the enzyme to break beta-glycosidic linkages.", "it is held together by peptide bonds."], "ans": 2}, {"q": "What is the primary function of starch in plants?", "options": ["Structural support", "Energy storage", "Information storage", "Catalysis"], "ans": 1}, {"q": "The covalent bond that joins two monosaccharides is called a...", "options": ["Peptide bond", "Phosphodiester bond", "Glycosidic linkage", "Ester linkage"], "ans": 2}, {"q": "Which of the following represents a disaccharide?", "options": ["Glucose", "Fructose", "Sucrose", "Galactose"], "ans": 2}, {"q": "Chitin, a complex carbohydrate, is found primarily in...", "options": ["Plant cell walls", "Animal liver", "Bacterial nucleoids", "Arthropod exoskeletons and fungal cell walls"], "ans": 3}, {"q": "Carbohydrates are typically composed of C, H, and O in what ratio?", "options": ["1:1:1", "1:2:1", "2:1:2", "1:3:1"], "ans": 1}, {"q": "The structural difference between starch and cellulose is due to...", "options": ["Starch containing only glucose, and cellulose containing only fructose.", "The use of alpha-glucose in starch and beta-glucose in cellulose.", "Starch being formed by hydrolysis and cellulose by dehydration.", "Cellulose containing nitrogen while starch does not."], "ans": 1}, {"q": "Which molecule is directly produced during the hydrolysis of glycogen?", "options": ["Amino acids", "Glucose", "Nucleotides", "Fatty acids"], "ans": 1}, {"q": "Which of the following is an example of a linear, unbranched carbohydrate?", "options": ["Glycogen", "Amylopectin", "Cellulose", "Sucrose"], "ans": 2}, {"q": "Why are lipids insoluble in water?", "options": ["They are primarily composed of polar functional groups.", "They consist mainly of nonpolar carbon-hydrogen bonds.", "They contain highly charged phosphate groups.", "They form dense hydrogen bond networks."], "ans": 1}, {"q": "A triglyceride consists of...", "options": ["three glycerols and one fatty acid.", "a glycerol molecule bonded to three fatty acids.", "a phosphate group and two fatty acids.", "a steroid ring attached to three fatty acids."], "ans": 1}, {"q": "Which of the following statements about saturated fats is TRUE?", "options": ["They have multiple double bonds in the carbon chains.", "They are typically liquid at room temperature.", "They contain the maximum number of hydrogen atoms possible.", "They are mostly found in plants."], "ans": 2}, {"q": "Phospholipids are described as amphipathic because they...", "options": ["have both hydrophilic and hydrophobic regions.", "can act as both acids and bases.", "are found in both plant and animal cells.", "can form both single and double bonds."], "ans": 0}, {"q": "The cell membrane bilayer is organized with...", "options": ["hydrophobic heads facing outward and hydrophilic tails facing inward.", "hydrophilic heads facing outward and hydrophobic tails facing inward.", "phospholipids arranged randomly.", "steroids completely replacing phospholipids."], "ans": 1}, {"q": "Which lipid acts as a precursor for the synthesis of other steroids such as testosterone and estrogen?", "options": ["Triglyceride", "Phospholipid", "Cholesterol", "Saturated fat"], "ans": 2}, {"q": "Unsaturated fatty acids have \"kinks\" in their tails due to...", "options": ["triple bonds.", "cis-double bonds.", "the addition of phosphate groups.", "peptide bonds."], "ans": 1}, {"q": "The primary function of brown fat (adipose tissue) in mammals is...", "options": ["membrane structure.", "hormonal signaling.", "thermal insulation and energy storage.", "enzymatic catalysis."], "ans": 2}, {"q": "Steroids are chemically characterized by...", "options": ["a long unbranched hydrocarbon chain.", "four fused carbon rings.", "a glycerol backbone.", "a phosphate head group."], "ans": 1}, {"q": "Through what type of linkage are fatty acids attached to glycerol in a fat?", "options": ["Peptide bonds", "Glycosidic linkages", "Ester linkages", "Phosphodiester bonds"], "ans": 2}, {"q": "The three components of a nucleotide are...", "options": ["a nitrogenous base, a 6-carbon sugar, and a phosphate group.", "a nitrogenous base, a 5-carbon sugar, and a phosphate group.", "an amino group, a carboxyl group, and an R-group.", "a glycerol, a fatty acid, and a phosphate group."], "ans": 1}, {"q": "In a DNA molecule, adenine always pairs with thymine via...", "options": ["one hydrogen bond.", "two hydrogen bonds.", "three hydrogen bonds.", "covalent bonds."], "ans": 1}, {"q": "Which of the following is a pyrimidine found in RNA but NOT in DNA?", "options": ["Thymine", "Uracil", "Cytosine", "Adenine"], "ans": 1}, {"q": "The backbone of a DNA strand is formed by alternating...", "options": ["sugars and phosphates.", "nitrogenous bases and sugars.", "nitrogenous bases and phosphates.", "amino acids and sugars."], "ans": 0}, {"q": "The two strands of a DNA double helix are held together by...", "options": ["Phosphodiester bonds between sugars.", "Peptide bonds between bases.", "Hydrogen bonds between complementary base pairs.", "Ionic bonds between phosphates."], "ans": 2}, {"q": "Nucleic acids exhibit directionality. New nucleotides are always added to the...", "options": ["5' phosphate end.", "3' hydroxyl end.", "nitrogenous base.", "2' hydroxyl end."], "ans": 1}, {"q": "Which feature primarily distinguishes DNA from RNA?", "options": ["DNA has ribose sugar; RNA has deoxyribose sugar.", "DNA uses uracil; RNA uses thymine.", "DNA is typically double-stranded; RNA is typically single-stranded.", "DNA is found only in eukaryotes; RNA is found only in prokaryotes."], "ans": 2}, {"q": "The covalent bond connecting nucleotides in a nucleic acid polymer is called a...", "options": ["Peptide bond", "Phosphodiester bond", "Glycosidic linkage", "Ester linkage"], "ans": 1}, {"q": "According to base-pairing rules, if a DNA sample contains 20% adenine, what is the percentage of cytosine?", "options": ["20%", "30%", "40%", "60%"], "ans": 1}, {"q": "Which nitrogenous bases are purines (having a double-ring structure)?", "options": ["Adenine and Guanine", "Cytosine and Thymine", "Uracil and Cytosine", "Adenine and Thymine"], "ans": 0}, {"q": "The unique sequence of amino acids in a polypeptide chain is referred to as its...", "options": ["Primary structure", "Secondary structure", "Tertiary structure", "Quaternary structure"], "ans": 0}, {"q": "What part of an amino acid determines its unique chemical properties (e.g., polar, nonpolar, acidic, basic)?", "options": ["The amino group", "The carboxyl group", "The central carbon", "The R-group (side chain)"], "ans": 3}, {"q": "Alpha-helices and beta-pleated sheets are characteristic of which level of protein structure?", "options": ["Primary", "Secondary", "Tertiary", "Quaternary"], "ans": 1}, {"q": "Secondary structures in proteins are maintained by...", "options": ["covalent bonds between R-groups.", "hydrogen bonds between the backbone amino and carboxyl groups.", "ionic bonds between acidic and basic amino acids.", "hydrophobic interactions."], "ans": 1}, {"q": "The overall 3D folding of a single polypeptide, stabilized by interactions between R-groups, is called its...", "options": ["Primary structure", "Secondary structure", "Tertiary structure", "Quaternary structure"], "ans": 2}, {"q": "Which of the following interactions is NOT typically involved in maintaining a protein's tertiary structure?", "options": ["Hydrogen bonds", "Disulfide bridges", "Peptide bonds", "Hydrophobic interactions"], "ans": 2}, {"q": "Hemoglobin, which is composed of four separate polypeptide subunits interacting together, represents which level of structure?", "options": ["Primary", "Secondary", "Tertiary", "Quaternary"], "ans": 3}, {"q": "Denaturation of a protein typically does NOT disrupt its...", "options": ["Primary structure", "Secondary structure", "Tertiary structure", "Quaternary structure"], "ans": 0}, {"q": "If a mutation changes a hydrophilic amino acid to a hydrophobic amino acid in an aqueous environment, what will likely happen?", "options": ["The protein will fold with that amino acid on the surface.", "The protein will fold with that amino acid tucked inside the core.", "The protein's primary structure will remain unchanged.", "The peptide bonds will immediately break."], "ans": 1}, {"q": "What type of bond is formed when the sulfhydryl groups of two cysteine amino acids oxidize to stabilize tertiary structure?", "options": ["Hydrogen bond", "Ionic bond", "Disulfide bridge (covalent)", "Van der Waals interaction"], "ans": 2}, {"q": "Amino acids are joined together by a dehydration reaction between the...", "options": ["R-groups of two amino acids.", "carboxyl group of one amino acid and the amino group of another.", "central carbons of two amino acids.", "phosphate groups of two amino acids."], "ans": 1}, {"q": "A protein's specific function is most directly determined by its...", "options": ["three-dimensional shape.", "number of peptide bonds.", "amount of nitrogen.", "length of its carbon skeleton."], "ans": 0}, {"q": "Enzymes are a vital class of biological macromolecules that speed up chemical reactions. Most enzymes are...", "options": ["Carbohydrates", "Lipids", "Proteins", "Nucleic Acids"], "ans": 2}, {"q": "Which component is present in an amino acid but NOT typically in a monosaccharide?", "options": ["Carbon", "Hydrogen", "Oxygen", "Nitrogen"], "ans": 3}, {"q": "In an aqueous cellular environment, where would you expect to find amino acids with nonpolar R-groups?", "options": ["On the exterior surface of the protein", "Buried in the interior of the protein", "Bound to the DNA", "Free-floating outside the protein core entirely"], "ans": 1}];
+        const frq_data = [{"topic": "1.1 Structure of Water & Hydrogen Bonding", "question": "A researcher places a sealed container of water in a freezer and observes that the container cracks as the water freezes. (a) Explain, at the molecular level, why water expands when it freezes. Include the role of hydrogen bonding in your answer. (b) Describe how the density anomaly of ice is critical for the survival of aquatic organisms during winter. (c) Explain how adhesion and cohesion work together to enable water transport in vascular plants. Identify one specific structure in plants where this process occurs. (d) A student observes that a paper clip floats on the surface of water in a beaker. Explain this observation in terms of the molecular properties of water.", "model_answer": "<strong>Part a:</strong> As water freezes, its molecules slow down and form a stable, crystalline lattice where each water molecule is hydrogen-bonded to four others. This structure holds the molecules further apart than they are in liquid water, causing water to expand and become less dense as a solid, which cracks the container.<br><br><strong>Part b:</strong> Because ice is less dense than liquid water, it floats. This creates an insulating layer on the surface of aquatic environments, preventing the water below from freezing solid and allowing aquatic organisms to survive the winter.<br><br><strong>Part c:</strong> Cohesion (water molecules hydrogen-bonding to each other) holds the water column together, while adhesion (water molecules bonding to the walls) helps it resist the downward pull of gravity. Together, they allow water to be pulled up through the <em>xylem</em> of vascular plants during transpiration.<br><br><strong>Part d:</strong> The paper clip floats due to surface tension. At the water's surface, water molecules are more strongly attracted to each other (via hydrogen bonding) than to the air above, creating a \"skin\" that resists breaking under the light weight of the paper clip."}, {"topic": "1.2 Elements of Life", "question": "A student creates a table listing elements found in the human body and their approximate percentages by mass. The student notices that oxygen is the most abundant element by mass (65%) even though carbon is called the 'backbone of life'. (a) Explain why oxygen constitutes a greater percentage of body mass than carbon, even though carbon forms the structural framework of organic molecules. (b) Describe the biological significance of nitrogen in living organisms. Identify two specific types of biological molecules that contain nitrogen and explain nitrogen's role in each.", "model_answer": "<strong>Part a:</strong> Oxygen constitutes a greater percentage of body mass because the human body is composed primarily of water (H2O), which makes up 60-70% of total body mass. Since the atomic mass of oxygen is significantly higher than that of hydrogen, oxygen dominates the overall mass percentage of the body, despite carbon being the structural backbone of biological macromolecules.<br><br><strong>Part b:</strong> Nitrogen is biologically significant as an essential building block. It is found in <em>amino acids</em> (forming the amino group, -NH2, necessary for peptide bonds in proteins) and in <em>nucleotides</em> (forming the nitrogenous bases required for information storage and base-pairing in DNA and RNA)."}, {"topic": "1.3 Introduction to Biological Macromolecules", "question": "A student in a biology lab is given three unknown solutions. The student is told that one contains a protein, one contains a polysaccharide, and one contains a nucleic acid. (a) If the student hydrolyzes all three macromolecules completely, identify the monomer produced by each and the type of bond that was broken. (b) Explain why lipids are not considered true polymers, even though they are classified as biological macromolecules. Describe how lipid assembly differs from the polymerization of the other three macromolecule classes.", "model_answer": "<strong>Part a:</strong> <br>1. Protein: Monomer is amino acids; bond broken is a peptide bond.<br>2. Polysaccharide: Monomer is monosaccharides (e.g., glucose); bond broken is a glycosidic linkage.<br>3. Nucleic acid: Monomer is nucleotides; bond broken is a phosphodiester bond.<br><br><strong>Part b:</strong> Lipids are not considered true polymers because they are not built from a repeating chain of identical or similar monomers. While they are assembled via dehydration synthesis (e.g., attaching fatty acids to a glycerol backbone with ester bonds), they do not form long, continuous chains of repeating subunits like proteins, carbohydrates, or nucleic acids do."}, {"topic": "1.4 Carbohydrates", "question": "Glycogen and cellulose are both polysaccharides composed of glucose, yet they serve very different biological functions in different organisms. (a) Describe the structure of glycogen, including its branching pattern and glycosidic linkage type. Explain how its structure relates to its function as an energy storage molecule in animals. (b) Explain why humans can digest starch but cannot digest cellulose, even though both are made entirely of glucose. Relate your answer to enzyme specificity.", "model_answer": "<strong>Part a:</strong> Glycogen is composed of \u03b1-glucose monomers joined by \u03b1-1,4-glycosidic linkages, with extensive branching created by \u03b1-1,6-glycosidic linkages. This highly branched structure is ideal for energy storage because it provides many free ends where enzymes can rapidly hydrolyze the molecule to release glucose when energy is needed.<br><br><strong>Part b:</strong> Humans produce the enzyme amylase, which has an active site specific to the \u03b1-glycosidic linkages found in starch. Humans lack the enzyme cellulase needed to hydrolyze the \u03b2-glycosidic linkages found in cellulose. Because enzymes are highly specific to the shape and bond geometry of their substrates, human enzymes cannot break down cellulose, causing it to pass through the digestive tract as fiber."}, {"topic": "1.5 Lipids", "question": "Trans fats are artificially produced unsaturated fats in which the hydrogen atoms around a double bond are on opposite sides (trans configuration) rather than the same side (cis configuration). (a) Explain why trans fats behave more like saturated fats than like natural unsaturated fats in terms of their physical properties and effects on membrane fluidity. (b) Predict what would happen to cell membrane fluidity if an organism's phospholipids were suddenly replaced with phospholipids containing only fully saturated fatty acid tails. Explain your reasoning.", "model_answer": "<strong>Part a:</strong> The trans configuration of the double bond results in a straight hydrocarbon chain, eliminating the \"kink\" normally found in naturally occurring cis-unsaturated fats. Because the chains are straight, trans fats can pack tightly together at room temperature, making them solid and behaving like saturated fats, which would severely decrease membrane fluidity if incorporated into lipid bilayers.<br><br><strong>Part b:</strong> If all phospholipids contained only fully saturated fatty acid tails, the membrane would become significantly less fluid and more rigid. Without the kinks introduced by unsaturated fatty acids, the straight hydrocarbon chains would pack tightly together, maximizing van der Waals interactions. This reduced fluidity would impair the lateral movement of membrane proteins, disrupt transport processes, and potentially cause the membrane to solidify at lower temperatures."}, {"topic": "1.6 Nucleic Acids", "question": "A forensic scientist analyzes a DNA sample from a crime scene and determines that 22% of the bases are adenine (A). (a) Using Chargaff's rules, calculate the percentages of thymine (T), guanine (G), and cytosine (C) in this DNA sample. Show your work and explain the reasoning behind your calculations. (b) Predict the approximate melting temperature of this DNA sample relative to a sample in which 40% of the bases are adenine. Justify your prediction.", "model_answer": "<strong>Part a:</strong> According to Chargaff's rules of complementary base pairing, Adenine pairs with Thymine (A=T) and Guanine pairs with Cytosine (G=C). If Adenine is 22%, then Thymine is also 22%. Together, A+T = 44%. The remaining 56% must be composed of Guanine and Cytosine. Since G=C, we divide 56% by 2. Therefore, Guanine is 28% and Cytosine is 28%.<br><br><strong>Part b:</strong> The crime scene sample (22% A, meaning 56% G-C content) would have a <em>higher</em> melting temperature than the 40% A sample (which would have only 20% G-C content). This is because Guanine and Cytosine are held together by three hydrogen bonds, while Adenine and Thymine are held together by only two. More G-C pairs means more total hydrogen bonds, requiring more thermal energy (higher temperature) to denature the double helix."}, {"topic": "1.7 Proteins", "question": "Proteins are polymers of amino acids whose specific three-dimensional shapes determine their functions. (a) Describe the four levels of protein structure. For each level, identify the types of bonds or interactions that stabilize it. (b) Explain what denaturation is and describe two environmental conditions that can cause a protein to denature. For each condition, explain the molecular mechanism by which it disrupts protein structure.", "model_answer": "<strong>Part a:</strong> <br>1. <em>Primary Structure:</em> The linear sequence of amino acids, stabilized by covalent peptide bonds.<br>2. <em>Secondary Structure:</em> Local folding (alpha-helices, beta-pleated sheets), stabilized by hydrogen bonds between the backbone amino and carboxyl groups.<br>3. <em>Tertiary Structure:</em> The overall 3D shape, stabilized by R-group interactions including hydrogen bonds, ionic bonds, hydrophobic interactions, and covalent disulfide bridges.<br>4. <em>Quaternary Structure:</em> The assembly of multiple polypeptide subunits, stabilized by the same R-group interactions as tertiary structure.<br><br><strong>Part b:</strong> Denaturation is the loss of a protein's functional 3D shape (secondary, tertiary, quaternary structure) without breaking the primary sequence peptide bonds. <br>1. <em>High Temperature:</em> Increases kinetic energy, causing violent molecular vibrations that break the weak hydrogen bonds and hydrophobic interactions stabilizing the folded shape.<br>2. <em>Changes in pH (Acidity/Alkalinity):</em> Alters the concentration of H+ and OH- ions in solution, which disrupts the charge-charge ionic bonds (salt bridges) and hydrogen bonds between polar/charged R-groups."}];
+
+        // App State
+        let state = {
+            currentView: 'dashboard',
+            progress: JSON.parse(localStorage.getItem('apbio_progress')) || { topicsCompleted: [], quizScores: [], favorites: [] },
+            currentFlashcardIndex: 0
+        };
+
+        // Utility to save state
+        function saveProgress() {
+            localStorage.setItem('apbio_progress', JSON.stringify(state.progress));
+            renderSidebar();
+        }
+
+        function resetProgress() {
+            if(confirm("Are you sure you want to reset all your scores and progress?")) {
+                state.progress = { topicsCompleted: [], quizScores: [], favorites: [] };
+                saveProgress();
+                renderView(state.currentView);
+            }
+        }
+
+        function initApp() {
+            renderSidebar();
+            renderView('dashboard');
+        }
+
+        // Sidebar Renderer
+        function renderSidebar() {
+            const nav = document.getElementById('nav-menu');
+
+            nav.innerHTML = `
+                <li><a href="#" onclick="navigate('dashboard')" class="nav-link ${state.currentView === 'dashboard' ? 'active-tab' : ''} block px-6 py-3 text-gray-600 hover:bg-gray-50 hover:text-blue-600"><i class="fa-solid fa-chart-pie w-6"></i> Dashboard</a></li>
+                <li><a href="#" onclick="navigate('flashcards')" class="nav-link ${state.currentView === 'flashcards' ? 'active-tab' : ''} block px-6 py-3 text-gray-600 hover:bg-gray-50 hover:text-blue-600"><i class="fa-solid fa-clone w-6"></i> Concept Flashcards</a></li>
+                <li><a href="#" onclick="navigate('quiz')" class="nav-link ${state.currentView === 'quiz' ? 'active-tab' : ''} block px-6 py-3 text-gray-600 hover:bg-gray-50 hover:text-blue-600"><i class="fa-solid fa-list-check w-6"></i> MC Practice Quiz</a></li>
+                <li><a href="#" onclick="navigate('frq')" class="nav-link ${state.currentView === 'frq' ? 'active-tab' : ''} block px-6 py-3 text-gray-600 hover:bg-gray-50 hover:text-blue-600"><i class="fa-solid fa-pen-to-square w-6"></i> FRQ Practice Bank</a></li>
+                <li class="pt-4 pb-2 px-6 text-xs font-semibold text-gray-400 uppercase tracking-wider">Concepts</li>
+            `;
+
+            topics.forEach(t => {
+                const isCompleted = state.progress.topicsCompleted.includes(t.id);
+                const isActive = state.currentView === t.id;
+                nav.innerHTML += `
+                    <li>
+                        <a href="#" onclick="navigate('${t.id}')" class="nav-link ${isActive ? 'active-tab' : ''} block px-6 py-2.5 text-sm text-gray-600 hover:bg-gray-50 hover:text-blue-600 flex justify-between items-center">
+                            <span class="truncate pr-2">${t.id} ${t.title.split(' ').slice(1).join(' ')}</span>
+                            ${isCompleted ? '<i class="fa-solid fa-check-circle text-green-500"></i>' : ''}
+                        </a>
+                    </li>
+                `;
+            });
+        }
+
+        function navigate(view) {
+            state.currentView = view;
+            renderSidebar();
+            renderView(view);
+        }
+
+        function toggleAnswer(index) {
+            const ansDiv = document.getElementById('frq-ans-' + index);
+            const btn = document.getElementById('frq-btn-' + index);
+            if(ansDiv.classList.contains('hidden')) {
+                ansDiv.classList.remove('hidden');
+                btn.innerHTML = '<i class="fa-solid fa-eye-slash mr-2"></i>Hide Rubric / Model Answer';
+                btn.classList.replace('bg-green-600', 'bg-gray-600');
+                btn.classList.replace('hover:bg-green-700', 'hover:bg-gray-700');
+            } else {
+                ansDiv.classList.add('hidden');
+                btn.innerHTML = '<i class="fa-solid fa-eye mr-2"></i>View Rubric / Model Answer';
+                btn.classList.replace('bg-gray-600', 'bg-green-600');
+                btn.classList.replace('hover:bg-gray-700', 'hover:bg-green-700');
+            }
+        }
+
+        function renderView(view) {
+            const main = document.getElementById('main-content');
+
+            if(view === 'dashboard') {
+                const highestScore = state.progress.quizScores.length > 0 ? Math.max(...state.progress.quizScores) : 0;
+                const progressPercent = Math.round((state.progress.topicsCompleted.length / topics.length) * 100);
+
+                main.innerHTML = `
+                    <div class="max-w-4xl mx-auto">
+                        <h2 class="text-3xl font-bold text-gray-800 mb-8">Welcome back!</h2>
+
+                        <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-10">
+                            <div class="bg-white rounded-xl p-6 shadow-sm border border-gray-100 flex items-center">
+                                <div class="bg-blue-100 p-4 rounded-full text-blue-600 mr-4">
+                                    <i class="fa-solid fa-book-open text-xl"></i>
+                                </div>
+                                <div>
+                                    <p class="text-sm text-gray-500 font-medium">Topics Completed</p>
+                                    <h3 class="text-2xl font-bold text-gray-800">${state.progress.topicsCompleted.length} / ${topics.length}</h3>
+                                </div>
+                            </div>
+                            <div class="bg-white rounded-xl p-6 shadow-sm border border-gray-100 flex items-center">
+                                <div class="bg-green-100 p-4 rounded-full text-green-600 mr-4">
+                                    <i class="fa-solid fa-trophy text-xl"></i>
+                                </div>
+                                <div>
+                                    <p class="text-sm text-gray-500 font-medium">Highest Quiz Score</p>
+                                    <h3 class="text-2xl font-bold text-gray-800">${highestScore}%</h3>
+                                </div>
+                            </div>
+                            <div class="bg-white rounded-xl p-6 shadow-sm border border-gray-100 flex items-center">
+                                <div class="bg-red-100 p-4 rounded-full text-red-600 mr-4">
+                                    <i class="fa-solid fa-heart text-xl"></i>
+                                </div>
+                                <div>
+                                    <p class="text-sm text-gray-500 font-medium">Favorited Cards</p>
+                                    <h3 class="text-2xl font-bold text-gray-800">${state.progress.favorites.length}</h3>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="bg-white rounded-xl p-8 shadow-sm border border-gray-100">
+                            <h3 class="text-xl font-bold text-gray-800 mb-4">Course Progress</h3>
+                            <div class="w-full bg-gray-200 rounded-full h-4 mb-4">
+                                <div class="bg-blue-600 h-4 rounded-full transition-all duration-1000" style="width: ${progressPercent}%"></div>
+                            </div>
+                            <p class="text-gray-600 text-sm">You have completed ${progressPercent}% of the Unit 1 material.</p>
+                        </div>
+                    </div>
+                `;
+            }
+            else if(view === 'frq') {
+                let frqHTML = `
+                    <div class="max-w-4xl mx-auto pb-20">
+                        <div class="mb-8">
+                            <h2 class="text-3xl font-bold text-gray-800 mb-2">Free Response Questions (FRQ) Bank</h2>
+                            <p class="text-gray-600 text-lg">Practice structuring your answers for the AP Exam. Read the prompt, write out your response on paper, then check against the model answer.</p>
+                            <a href="Unit1_FreeResponseQuestions.pdf" target="_blank" class="inline-block mt-4 px-4 py-2 bg-purple-100 text-purple-700 border border-purple-300 rounded hover:bg-purple-200 transition font-medium"><i class="fa-solid fa-file-pdf mr-2"></i>Download Full FRQ Study Deck PDF</a>
+                        </div>
+                        <div class="space-y-6">
+                `;
+
+                frq_data.forEach((frq, idx) => {
+                    frqHTML += `
+                        <div class="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden">
+                            <div class="bg-gray-50 px-6 py-4 border-b border-gray-200">
+                                <h3 class="font-bold text-gray-800"><i class="fa-solid fa-pen mr-2 text-blue-500"></i>${frq.topic}</h3>
+                            </div>
+                            <div class="p-6">
+                                <p class="text-gray-700 mb-6 leading-relaxed">${frq.question}</p>
+
+                                <button id="frq-btn-${idx}" onclick="toggleAnswer(${idx})" class="px-5 py-2 bg-green-600 text-white rounded font-medium shadow-sm hover:bg-green-700 transition">
+                                    <i class="fa-solid fa-eye mr-2"></i>View Rubric / Model Answer
+                                </button>
+
+                                <div id="frq-ans-${idx}" class="hidden mt-6 bg-green-50 border border-green-200 rounded-lg p-6 text-gray-800 leading-relaxed">
+                                    ${frq.model_answer}
+                                </div>
+                            </div>
+                        </div>
+                    `;
+                });
+
+                frqHTML += `</div></div>`;
+                main.innerHTML = frqHTML;
+            }
+            else if(view === 'flashcards') {
+                state.currentFlashcardIndex = 0;
+                renderFlashcardUI();
+            }
+            else if(view === 'quiz') {
+                renderQuizSetup();
+            }
+            else {
+                // It's a topic view
+                const t = topics.find(topic => topic.id === view);
+                const isCompleted = state.progress.topicsCompleted.includes(t.id);
+
+                let slidesHTML = t.slides.map((s, i) => `<li class="mb-3 flex items-start"><span class="bg-blue-100 text-blue-700 text-xs font-bold px-2 py-1 rounded mr-3 mt-0.5">${i+1}</span> <span class="text-gray-700">${s}</span></li>`).join('');
+
+                let textbookHTML = t.textbook_links ? t.textbook_links.map(link => `
+                    <a href="${link.url}" target="_blank" class="block p-4 border border-gray-200 bg-green-50 rounded-lg hover:shadow-md hover:border-green-400 transition flex items-center mb-3">
+                        <i class="fa-solid fa-book-open text-green-600 text-2xl mr-4"></i>
+                        <span class="font-medium text-gray-800">${link.name}</span>
+                        <i class="fa-solid fa-arrow-up-right-from-square ml-auto text-gray-400"></i>
+                    </a>
+                `).join('') : '<p class="text-gray-500 italic">No specific textbook link required.</p>';
+
+                let videosHTML = t.videos.map(v => `
+                    <a href="${v.url}" target="_blank" class="block p-4 border border-gray-200 rounded-lg hover:shadow-md hover:border-blue-300 transition flex items-center mb-3">
+                        <i class="fa-brands fa-youtube text-red-500 text-2xl mr-4"></i>
+                        <span class="font-medium text-gray-800">${v.name}</span>
+                        <i class="fa-solid fa-arrow-up-right-from-square ml-auto text-gray-400"></i>
+                    </a>
+                `).join('');
+
+                let pdfHTML = t.pdf_file ? `
+                    <div class="mt-6 border-t pt-4 border-gray-100">
+                        <a href="${t.pdf_file}" target="_blank" class="w-full block text-center p-3 bg-purple-50 text-purple-700 border border-purple-200 rounded-lg hover:bg-purple-100 transition font-medium">
+                            <i class="fa-solid fa-file-pdf mr-2"></i> Open Topic Slide Deck
+                        </a>
+                        <p class="text-xs text-gray-400 text-center mt-2">Requires PDF file to be hosted in the same folder</p>
+                    </div>
+                ` : '';
+
+                main.innerHTML = `
+                    <div class="max-w-5xl mx-auto pb-20">
+                        <div class="flex justify-between items-center mb-8">
+                            <h2 class="text-3xl font-bold text-gray-800">${t.title}</h2>
+                            <button onclick="toggleTopicComplete('${t.id}')" class="${isCompleted ? 'bg-green-100 text-green-700 border-green-300' : 'bg-white text-gray-600 border-gray-300 hover:bg-gray-50'} border px-4 py-2 rounded-lg font-medium transition shadow-sm">
+                                <i class="fa-solid ${isCompleted ? 'fa-check' : 'fa-circle-check'} mr-2"></i> ${isCompleted ? 'Completed' : 'Mark as Complete'}
+                            </button>
+                        </div>
+
+                        <div class="bg-white rounded-xl p-8 shadow-sm border border-gray-100 mb-8">
+                            <h3 class="text-xl font-bold text-blue-700 mb-4 border-b pb-2"><i class="fa-solid fa-book-open-reader mr-2"></i>Theory Summary</h3>
+                            <p class="text-gray-700 leading-relaxed text-lg">${t.theory}</p>
+                        </div>
+
+                        <div class="grid grid-cols-1 lg:grid-cols-2 gap-8 mb-8">
+                            <!-- Left Column: Slides -->
+                            <div class="bg-white rounded-xl p-8 shadow-sm border border-gray-100 h-full flex flex-col">
+                                <h3 class="text-xl font-bold text-blue-700 mb-4 border-b pb-2"><i class="fa-solid fa-person-chalkboard mr-2"></i>Key Slide Concepts</h3>
+                                <ul class="flex-1">${slidesHTML}</ul>
+                                ${pdfHTML}
+                            </div>
+
+                            <!-- Right Column: Textbooks & Videos -->
+                            <div class="space-y-8">
+                                <div class="bg-white rounded-xl p-8 shadow-sm border border-gray-100">
+                                    <h3 class="text-xl font-bold text-green-700 mb-4 border-b pb-2"><i class="fa-solid fa-bookmark mr-2"></i>Textbook Readings</h3>
+                                    ${textbookHTML}
+                                    <p class="text-xs text-gray-400 mt-2"><i class="fa-solid fa-circle-info"></i> Direct links to OpenStax Biology for AP® Courses Chapters 2 & 3.</p>
+                                </div>
+
+                                <div class="bg-white rounded-xl p-8 shadow-sm border border-gray-100">
+                                    <h3 class="text-xl font-bold text-blue-700 mb-4 border-b pb-2"><i class="fa-solid fa-video mr-2"></i>Associated Videos</h3>
+                                    ${videosHTML}
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                `;
+            }
+        }
+
+        function toggleTopicComplete(id) {
+            if(state.progress.topicsCompleted.includes(id)) {
+                state.progress.topicsCompleted = state.progress.topicsCompleted.filter(t => t !== id);
+            } else {
+                state.progress.topicsCompleted.push(id);
+            }
+            saveProgress();
+            renderView(id);
+        }
+
+        // Flashcards Logic
+        function renderFlashcardUI() {
+            const main = document.getElementById('main-content');
+            const flashcards = questions; 
+            const card = flashcards[state.currentFlashcardIndex];
+            const isFav = state.progress.favorites.includes(state.currentFlashcardIndex);
+
+            main.innerHTML = `
+                <div class="max-w-3xl mx-auto h-full flex flex-col justify-center items-center pt-10">
+                    <h2 class="text-2xl font-bold text-gray-800 mb-2">Concept Flashcards</h2>
+                    <p class="text-gray-500 mb-8">Card ${state.currentFlashcardIndex + 1} of ${flashcards.length}</p>
+
+                    <div class="relative w-full max-w-2xl h-80 flashcard perspective" id="flashcard" onclick="this.classList.toggle('flipped')">
+                        <div class="flashcard-inner">
+                            <div class="flashcard-front flex flex-col">
+                                <span class="text-sm font-semibold text-blue-500 uppercase tracking-widest mb-4">Question</span>
+                                <h3 class="text-2xl font-bold text-gray-800 px-6">${card.q}</h3>
+                                <p class="text-gray-400 text-sm mt-auto"><i class="fa-solid fa-hand-pointer"></i> Click to flip</p>
+                            </div>
+                            <div class="flashcard-back flex flex-col">
+                                <span class="text-sm font-semibold text-blue-200 uppercase tracking-widest mb-4 mt-6">Answer</span>
+                                <h3 class="text-xl md:text-2xl font-bold text-white px-6 pb-6">${card.options[card.ans]}</h3>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="flex justify-between items-center w-full max-w-2xl mt-10">
+                        <button onclick="changeFlashcard(-1)" class="px-6 py-3 bg-white border border-gray-200 rounded-lg shadow-sm hover:bg-gray-50 disabled:opacity-50"><i class="fa-solid fa-arrow-left"></i> Prev</button>
+
+                        <button onclick="toggleFavorite(${state.currentFlashcardIndex})" class="px-6 py-3 rounded-full text-2xl transition hover:scale-110 ${isFav ? 'text-red-500' : 'text-gray-300'}">
+                            <i class="fa-solid fa-heart"></i>
+                        </button>
+
+                        <button onclick="changeFlashcard(1)" class="px-6 py-3 bg-blue-600 text-white rounded-lg shadow-sm hover:bg-blue-700 disabled:opacity-50">Next <i class="fa-solid fa-arrow-right"></i></button>
+                    </div>
+                </div>
+            `;
+        }
+
+        function changeFlashcard(dir) {
+            const newIndex = state.currentFlashcardIndex + dir;
+            if(newIndex >= 0 && newIndex < questions.length) {
+                state.currentFlashcardIndex = newIndex;
+                renderFlashcardUI();
+            }
+        }
+
+        function toggleFavorite(index) {
+            if(state.progress.favorites.includes(index)) {
+                state.progress.favorites = state.progress.favorites.filter(i => i !== index);
+            } else {
+                state.progress.favorites.push(index);
+            }
+            saveProgress();
+            renderFlashcardUI();
+        }
+
+        // Quiz Logic
+        let quizState = { questions: [], currentIndex: 0, score: 0, answers: [] };
+
+        function renderQuizSetup() {
+            const main = document.getElementById('main-content');
+            main.innerHTML = `
+                <div class="max-w-2xl mx-auto pt-20 text-center">
+                    <div class="bg-blue-100 w-24 h-24 rounded-full flex items-center justify-center mx-auto mb-6">
+                        <i class="fa-solid fa-list-check text-4xl text-blue-600"></i>
+                    </div>
+                    <h2 class="text-3xl font-bold text-gray-800 mb-4">Unit 1 Assessment</h2>
+                    <p class="text-gray-600 mb-8 text-lg">Test your knowledge of the Chemistry of Life with a comprehensive multiple-choice quiz. The bank contains ${questions.length} questions.</p>
+
+                    <div class="bg-white p-6 rounded-xl border border-gray-200 shadow-sm mb-8 text-left">
+                        <h4 class="font-bold text-gray-800 mb-2">Quiz Settings</h4>
+                        <label class="block text-sm text-gray-600 mb-1">Number of questions:</label>
+                        <select id="quiz-length" class="w-full p-3 border border-gray-300 rounded-lg bg-gray-50 focus:ring-blue-500 focus:border-blue-500">
+                            <option value="10">Quick Check (10 questions)</option>
+                            <option value="25">Standard (25 questions)</option>
+                            <option value="50">Comprehensive (50 questions)</option>
+                            <option value="${questions.length}">Full Bank (${questions.length} questions)</option>
+                        </select>
+                    </div>
+
+                    <button onclick="startQuiz()" class="w-full py-4 bg-blue-600 text-white text-lg font-bold rounded-xl shadow-lg hover:bg-blue-700 transition">Start Quiz Now</button>
+                </div>
+            `;
+        }
+
+        function startQuiz() {
+            const length = parseInt(document.getElementById('quiz-length').value);
+            let shuffled = [...questions].sort(() => 0.5 - Math.random());
+            quizState.questions = shuffled.slice(0, length);
+            quizState.currentIndex = 0;
+            quizState.score = 0;
+            quizState.answers = new Array(length).fill(null);
+            renderQuizQuestion();
+        }
+
+        function renderQuizQuestion() {
+            const main = document.getElementById('main-content');
+            if(quizState.currentIndex >= quizState.questions.length) {
+                finishQuiz();
+                return;
+            }
+
+            const q = quizState.questions[quizState.currentIndex];
+            const progress = ((quizState.currentIndex) / quizState.questions.length) * 100;
+
+            let optionsHTML = q.options.map((opt, idx) => `
+                <button onclick="selectQuizAnswer(${idx})" class="w-full text-left p-4 mb-3 rounded-lg border-2 border-gray-200 hover:border-blue-500 hover:bg-blue-50 transition text-lg">
+                    <span class="inline-block w-8 h-8 bg-gray-100 text-gray-600 rounded-full text-center leading-8 font-bold mr-3">${String.fromCharCode(65 + idx)}</span>
+                    ${opt}
+                </button>
+            `).join('');
+
+            main.innerHTML = `
+                <div class="max-w-3xl mx-auto pt-10">
+                    <div class="flex justify-between text-sm text-gray-500 mb-2 font-bold uppercase tracking-wider">
+                        <span>Question ${quizState.currentIndex + 1} of ${quizState.questions.length}</span>
+                        <span>Progress: ${Math.round(progress)}%</span>
+                    </div>
+                    <div class="w-full bg-gray-200 rounded-full h-2 mb-8">
+                        <div class="bg-blue-600 h-2 rounded-full transition-all" style="width: ${progress}%"></div>
+                    </div>
+
+                    <h3 class="text-2xl font-bold text-gray-800 mb-8">${q.q}</h3>
+
+                    <div class="options">
+                        ${optionsHTML}
+                    </div>
+                </div>
+            `;
+        }
+
+        function selectQuizAnswer(index) {
+            quizState.answers[quizState.currentIndex] = index;
+            if(index === quizState.questions[quizState.currentIndex].ans) {
+                quizState.score++;
+            }
+            quizState.currentIndex++;
+            renderQuizQuestion();
+        }
+
+        function finishQuiz() {
+            const main = document.getElementById('main-content');
+            const pct = Math.round((quizState.score / quizState.questions.length) * 100);
+
+            // Save Score
+            state.progress.quizScores.push(pct);
+            saveProgress();
+
+            main.innerHTML = `
+                <div class="max-w-2xl mx-auto pt-20 text-center">
+                    <div class="w-32 h-32 rounded-full flex items-center justify-center mx-auto mb-6 ${pct >= 70 ? 'bg-green-100 text-green-600' : 'bg-yellow-100 text-yellow-600'}">
+                        <i class="fa-solid ${pct >= 70 ? 'fa-trophy' : 'fa-star'} text-6xl"></i>
+                    </div>
+                    <h2 class="text-4xl font-bold text-gray-800 mb-4">Quiz Complete!</h2>
+                    <p class="text-2xl text-gray-600 mb-2">You scored <span class="font-bold ${pct >= 70 ? 'text-green-600' : 'text-yellow-600'}">${pct}%</span></p>
+                    <p class="text-gray-500 mb-8">${quizState.score} correct out of ${quizState.questions.length} questions.</p>
+
+                    <div class="flex space-x-4 justify-center">
+                        <button onclick="navigate('dashboard')" class="px-8 py-3 bg-gray-100 text-gray-700 font-bold rounded-lg hover:bg-gray-200 transition">Back to Dashboard</button>
+                        <button onclick="renderQuizSetup()" class="px-8 py-3 bg-blue-600 text-white font-bold rounded-lg hover:bg-blue-700 transition">Try Again</button>
+                    </div>
+                </div>
+            `;
+        }
+
+        // Boot
+        initApp();
+    </script>
+</body>
+</html>
